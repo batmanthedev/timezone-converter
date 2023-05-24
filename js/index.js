@@ -80,14 +80,10 @@ function getNewTime()
 
     var region = dropDownEl.value;
 
-    //console.log(tz.find(r => r.includes(region)));
-
     let time = tz[regions.findIndex(r => r == region)].split(" ")[2];
-    console.log(time);
 
     const today = new Date();
     today.setHours(parseInt(time.split(':')[0]), parseInt(time.split(':')[1]),parseInt(time.split(':')[2]));
-    //console.log(today.getHours() + " " + today.getMinutes());
     displayNewTime(today);
 }
 
@@ -100,14 +96,5 @@ function displayNewTime(newTime)
     const newClockEl = document.querySelector('.new-clock');
     newClockEl.textContent = time;
 
-    //let future = new Date(newTime.getTime() + 1000);
-
    timeHandle = setTimeout(function(){displayNewTime(new Date(newTime.getTime() + 1000));}, 1000);
 }
-
-//Get local time
-//Display local time
-//Get list of times in different time zones
-//Display list of times in different time zones
-//Get time zone specified by user
-//Display timezone specified by user
