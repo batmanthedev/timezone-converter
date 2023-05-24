@@ -80,6 +80,12 @@ function getNewTime()
 
     var region = dropDownEl.value;
 
+    if(region == "default")
+    {
+        newClockEl.textContent = "";
+        return "";
+    }
+
     let time = tz[regions.findIndex(r => r == region)].split(" ")[2];
 
     const today = new Date();
