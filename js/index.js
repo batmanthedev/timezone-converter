@@ -1,38 +1,109 @@
-async function getAllTimes() {
+window.onload = function()
+{
+    displayLocalTime();
+    getAllTimes();
+    getAllRegions();
+}
 
+let tz = [];
+let regions = [];
+var timeHandle;
+
+async function getAllTimes() { //Gets a list of all regions and their times, displays regions in drop down list
+
+    let temp = []
     const allTimeZones = await Intl.supportedValuesOf("timeZone");
-    let tz = [];
     let date = new Date();
-
-    console.log(allTimeZones);
 
     allTimeZones.forEach(
         (timeZone) => {
-            let time = date.toLocaleString( "en-uk", {time: `${timeZone}` });
-            //console.log(timeZone, time);
-            tz.push(timeZone + "" + time);
+            let time = date.toLocaleString("en-UK",{timeZone: `${timeZone}` });
+            temp.push(timeZone + " " + time);
+        }
+    )
+    tz = temp;
+    setTimeout(getAllTimes, 1000);
+}
+
+async function getAllRegions()
+{
+    const allTimeZones = await Intl.supportedValuesOf("timeZone");
+    let date = new Date();
+
+    allTimeZones.forEach(
+        (timeZone) => {
+            let time = date.toLocaleString("en-UK",{timeZone: `${timeZone}` });
+            regions.push(timeZone);
         }
     )
 
-    tz.forEach((t) =>{console.log(t)});
+    displayRegions();
 }
 
-function getLocalTime()
+function displayLocalTime() //displays local time in UI
 {
     let today = new Date();
-    let time = today.getHours() + ":" + today.getMinutes();
-    return time;
+
+    let h = today.getHours();
+    let m = today.getMinutes();
+
+    h = (h<10) ? "0" + h : h;
+    m = (m<10) ? "0" + m : m;
+
+    let time = h + ":" + m;
+
+    const localClockEl = document.querySelector('.local-clock');
+    localClockEl.textContent = time;
+
+    setTimeout(displayLocalTime, 1000);
 }
 
-//console.log(getLocalTime());
-
-getAllTimes();
-
-function DisplayLocalTime()
+function displayRegions() //displays a list of all regions without the time. This is for the drop down.
 {
+    let el;
 
+    const dropDownEl = document.querySelector('.regions-dd');
+    regions.forEach((r) => {
+        el = document.createElement("option");
+        el.textContent = r;
+        el.value = r;
+        dropDownEl.appendChild(el);
+    })
 }
 
+function getNewTime()
+{
+    clearTimeout(timeHandle);
+
+    const dropDownEl = document.querySelector('.regions-dd');
+    const newClockEl = document.querySelector('.new-clock');
+
+    var region = dropDownEl.value;
+
+    //console.log(tz.find(r => r.includes(region)));
+
+    let time = tz[regions.findIndex(r => r == region)].split(" ")[2];
+    console.log(time);
+
+    const today = new Date();
+    today.setHours(parseInt(time.split(':')[0]), parseInt(time.split(':')[1]),parseInt(time.split(':')[2]));
+    //console.log(today.getHours() + " " + today.getMinutes());
+    displayNewTime(today);
+}
+
+function displayNewTime(newTime)
+{
+    let h = (newTime.getHours() < 10) ? "0" + newTime.getHours() : newTime.getHours();
+    let m = (newTime.getMinutes() < 10) ? "0" + newTime.getMinutes() : newTime.getMinutes();
+    let time = h + ":" + m;
+
+    const newClockEl = document.querySelector('.new-clock');
+    newClockEl.textContent = time;
+
+    //let future = new Date(newTime.getTime() + 1000);
+
+   timeHandle = setTimeout(function(){displayNewTime(new Date(newTime.getTime() + 1000));}, 1000);
+}
 
 //Get local time
 //Display local time
@@ -40,7 +111,3 @@ function DisplayLocalTime()
 //Display list of times in different time zones
 //Get time zone specified by user
 //Display timezone specified by user
-
-
-
-
